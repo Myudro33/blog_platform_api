@@ -112,3 +112,24 @@ export const signIn = async (req, res) => {
   delete user.password;
   res.json({ message: "login success", token: token, data: user });
 };
+
+export const profile = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.users.findUnique({
+      where: { id: decoded.id },
+      include: { roles: true },
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    delete user.password;
+    res.json({ data: user });
+  } catch (error) {
+    res.status(500).json({ message: "server error", error: error.message });
+  }
+};

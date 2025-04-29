@@ -3,11 +3,12 @@ import {
   createUser,
   deleteUser,
   getAllUsers,
+  profile,
   signIn,
   signUp,
   updateUser,
 } from "../controllers/userController.js";
-import { auth, isAdmin } from "../middlewares/auth.js";
+import { auth, isAdmin, isUser } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router
   .route("/")
   .get(auth, isAdmin, getAllUsers)
   .post(auth, isAdmin, createUser);
+router.route("/me").get(auth, isUser, profile);
 router
   .route("/:id")
   .put(auth, isAdmin, updateUser)
