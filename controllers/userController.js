@@ -39,20 +39,23 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, password, role_Id } = req.body;
-
+  const { name } = req.body;
+  const file = req.file;
   try {
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const updatedUser = await prisma.users.update({
+    let updatedUser = await prisma.users.update({
       where: { id: parseInt(id) },
       data: {
         name,
-        email,
-        password: hashedPassword,
-        role_Id,
       },
     });
-    delete updatedUser.password;
+    if (file) {
+      updatedUser = await prisma.users.update({
+        where: { id: parseInt(id) },
+        data: {
+          profileImage: file.path,
+        },
+      });
+    }
     res
       .status(200)
       .json({ message: "User updated successfully", data: updatedUser });

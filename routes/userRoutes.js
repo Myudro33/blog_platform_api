@@ -7,6 +7,7 @@ import {
   updateUser,
 } from "../controllers/userController.js";
 import { auth, isAdmin, isUser } from "../middlewares/auth.js";
+import upload from "../middlewares/uploadFile.js";
 
 const router = express.Router();
 
@@ -17,6 +18,6 @@ router
 router.route("/me").get(auth, isUser, profile);
 router
   .route("/:id")
-  .put(auth, isAdmin, updateUser)
+  .put(auth, upload.single("profileImage"), updateUser)
   .delete(auth, isAdmin, deleteUser);
 export default router;
