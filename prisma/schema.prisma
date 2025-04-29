@@ -7,26 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model posts {
+model comments {
   id        Int      @id @unique @default(autoincrement())
-  title     String   @db.VarChar(255)
   content   String   @db.VarChar(255)
-  image     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  postId    Int
+  post      posts    @relation(fields: [postId], references: [id])
+  userId    Int
+  user      users    @relation(fields: [userId], references: [id])
+}
+
+model posts {
+  id        Int        @id @unique @default(autoincrement())
+  title     String     @db.VarChar(255)
+  content   String     @db.VarChar(255)
+  image     String?    @db.VarChar(255)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   authorId  Int
-  author    users    @relation(fields: [authorId], references: [id])
+  author    users      @relation(fields: [authorId], references: [id])
+  comments  comments[]
 }
 
 model users {
-  id           Int     @id @unique @default(autoincrement())
-  name         String  @db.VarChar(255)
-  email        String  @unique @db.VarChar(255)
-  password     String  @db.VarChar(255)
-  profileImage String? @db.VarChar(255)
+  id           Int        @id @unique @default(autoincrement())
+  name         String     @db.VarChar(255)
+  email        String     @unique @db.VarChar(255)
+  password     String     @db.VarChar(255)
+  profileImage String?    @db.VarChar(255)
   role_Id      Int
-  roles        roles   @relation(fields: [role_Id], references: [id])
+  roles        roles      @relation(fields: [role_Id], references: [id])
   posts        posts[]
+  comments     comments[]
 }
 
 model roles {

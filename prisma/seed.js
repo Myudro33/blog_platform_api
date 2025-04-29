@@ -56,6 +56,25 @@ async function main() {
       },
     ],
   });
+  const comments = await prisma.comments.createMany({
+    data: [
+      {
+        content: "This is a comment on the first post.",
+        postId: 1,
+        userId: 2,
+      },
+      {
+        content: "This is a comment on the second post.",
+        postId: 2,
+        userId: 1,
+      },
+      {
+        content: "This is a comment on the third post.",
+        postId: 3,
+        userId: 2,
+      },
+    ],
+  });
 }
 
 main()
