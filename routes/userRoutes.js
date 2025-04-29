@@ -4,8 +4,6 @@ import {
   deleteUser,
   getAllUsers,
   profile,
-  signIn,
-  signUp,
   updateUser,
 } from "../controllers/userController.js";
 import { auth, isAdmin, isUser } from "../middlewares/auth.js";
@@ -21,6 +19,4 @@ router
   .route("/:id")
   .put(auth, isAdmin, updateUser)
   .delete(auth, isAdmin, deleteUser);
-router.route("/signup").post(signUp);
-router.route("/signIn").post(signIn);
 export default router;
