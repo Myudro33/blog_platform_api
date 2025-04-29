@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import bcrypt from "bcrypt";
+
 async function main() {
   const roles = await prisma.roles.createMany({
     data: [
@@ -29,6 +30,29 @@ async function main() {
         email: "saba@gmail.com",
         password: bcrypt.hashSync("nika", 10),
         role_Id: 2,
+      },
+    ],
+  });
+
+  const posts = await prisma.posts.createMany({
+    data: [
+      {
+        title: "First Post",
+        content: "This is the content of the first post.",
+        image: "https://via.placeholder.com/150",
+        authorId: 1,
+      },
+      {
+        title: "Second Post",
+        content: "This is the content of the second post.",
+        image: "https://via.placeholder.com/150",
+        authorId: 2,
+      },
+      {
+        title: "Third Post",
+        content: "This is the content of the third post.",
+        image: "https://via.placeholder.com/150",
+        authorId: 1,
       },
     ],
   });
