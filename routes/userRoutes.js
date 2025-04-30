@@ -5,6 +5,8 @@ import {
   getAllUsers,
   profile,
   updateUser,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/userController.js";
 import { auth, isAdmin, isUser } from "../middlewares/auth.js";
 import upload from "../middlewares/uploadFile.js";
@@ -20,4 +22,6 @@ router
   .route("/:id")
   .put(auth, upload.single("profileImage"), updateUser)
   .delete(auth, isAdmin, deleteUser);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password").post(resetPassword);
 export default router;
