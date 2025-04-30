@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model otpCodes {
+  id     Int      @id @unique @default(autoincrement())
+  code   String   @db.VarChar(6)
+  expiry DateTime @db.Timestamp(6)
+  userId Int
+  user   users    @relation(fields: [userId], references: [id])
+}
+
 model comments {
   id        Int      @id @unique @default(autoincrement())
   content   String   @db.VarChar(255)
@@ -39,6 +47,8 @@ model users {
   roles        roles      @relation(fields: [role_Id], references: [id])
   posts        posts[]
   comments     comments[]
+  otpCodes     otpCodes[]
+  attempt      Int?
 }
 
 model roles {
