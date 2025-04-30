@@ -46,6 +46,7 @@ export const updateUser = async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         name,
+        updatedAt: new Date(),
       },
     });
     if (file) {
