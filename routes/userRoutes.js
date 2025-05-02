@@ -9,7 +9,7 @@ import {
   resetPassword,
 } from "../controllers/userController.js";
 import { auth, isAdmin, isUser } from "../middlewares/auth.js";
-import upload from "../middlewares/uploadFile.js";
+import { uploadProfile } from "../middlewares/uploadFile.js";
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router
 router.route("/me").get(auth, isUser, profile);
 router
   .route("/:id")
-  .put(auth, upload.single("profileImage"), updateUser)
+  .put(auth, uploadProfile.single("profileImage"), updateUser)
   .delete(auth, isAdmin, deleteUser);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password").post(resetPassword);

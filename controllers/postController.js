@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import fs from "fs";
 
 const prisma = new PrismaClient();
 
@@ -6,8 +7,12 @@ export const getPosts = async (req, res) => {
   try {
     const posts = await prisma.posts.findMany({
       include: {
-        comments: true,
-        author: { select: { id: true, name: true, email: true, image: true } },
+        author: {
+          select: { id: true, name: true, email: true, profileImage: true },
+        },
+        postImages: {
+          select: { id: true, url: true },
+        },
       },
     });
     res.json({ message: "success", data: posts });
@@ -18,18 +23,20 @@ export const getPosts = async (req, res) => {
 
 export const createPost = async (req, res) => {
   const { title, content } = req.body;
-  const file = req.file;
+  const files = req.files;
   const user = req.user;
   try {
     let newPost = await prisma.posts.create({
       data: { title, content, authorId: user.id },
     });
-    if (file) {
-      newPost = await prisma.posts.update({
-        where: { id: newPost.id },
-        data: {
-          image: file.path,
-        },
+    if (files && files.length > 0) {
+      const images = files.map((file) => ({
+        createdAt: new Date(),
+        postId: newPost.id,
+        url: file.path,
+      }));
+      await prisma.postImages.createMany({
+        data: images,
       });
     }
     res.json({ message: "success", data: newPost });
@@ -41,7 +48,7 @@ export const updatePost = async (req, res) => {
   const { id } = req.params;
   const user = req.user;
   const { title, content } = req.body;
-  const file = req.file;
+  const files = req.files;
   try {
     const post = await prisma.posts.findUnique({
       where: { id: parseInt(id) },
@@ -55,14 +62,24 @@ export const updatePost = async (req, res) => {
       where: { id: parseInt(id) },
       data: { title, content, updatedAt: new Date() },
     });
-    if (file) {
-      updatedPost = await prisma.posts.update({
-        where: { id: parseInt(id) },
-        data: {
-          image: file.path,
-        },
+    if (files && files.length > 0) {
+      files.array.forEach((file) => {
+        if (fs.existsSync(`./${file.path}`)) {
+          fs.unlinkSync(`./${file.path}`);
+        }
       });
     }
+    if (!files && !files.length > 0) {
+      res.status(400).json({ message: "no files uploaded" });
+    }
+    const images = files.map((file) => ({
+      createdAt: new Date(),
+      postId: newPost.id,
+      url: file.path,
+    }));
+    await prisma.postImages.createMany({
+      data: images,
+    });
     res.json({ message: "success", data: updatedPost });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -95,8 +112,9 @@ export const getPostById = async (req, res) => {
     const post = await prisma.posts.findUnique({
       where: { id: parseInt(id) },
       include: {
-        comments: true,
         author: { select: { id: true, name: true, email: true, image: true } },
+        postImages: { select: { id: true, url: true } },
+        comments: true,
       },
     });
     if (!post) {
