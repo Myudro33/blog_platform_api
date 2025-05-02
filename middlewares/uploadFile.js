@@ -23,11 +23,23 @@ const filterFiles = (req, file, cb) => {
     cb(new Error("Invalid file type"), false);
   }
 };
-
-const upload = multer({
+const filterProductImages = (req, file, cb) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type"), false);
+  }
+};
+const uploadProductImages = multer({
+  storage: storage,
+  fileFilter: filterProductImages,
+  limits: { fileSize: 15 * 1024 * 1024 },
+}); // 5 MB limit
+const uploadProfile = multer({
   storage: storage,
   fileFilter: filterFiles,
   limits: { fileSize: 5 * 1024 * 1024 },
 }); // 5 MB limit
 
-export default upload;
+export { uploadProfile, uploadProductImages };
