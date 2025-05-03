@@ -66,7 +66,26 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateUser'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: nika
+ *               email:
+ *                 type: string
+ *                 example: nika@gmail.com
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 example: nika
+ *                 format: password
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
+ *             required:
+ *               - name
+ *               - email
+ *               - password
  *     responses:
  *       201:
  *         description: User created successfully.
@@ -118,11 +137,17 @@
  *         schema:
  *           type: integer
  *     requestBody:
- *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UpdateUser'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: nika
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: User updated successfully.
