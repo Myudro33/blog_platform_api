@@ -6,7 +6,7 @@ import specs from "./models/swagger.js";
 dotenv.config();
 app.use("/uploads", express.static("./uploads"));
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
-const port = process.env.PROJECT_PORT || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("server is running on", port);
 });
