@@ -11,9 +11,6 @@
  *           type: string
  *         content:
  *           type: string
- *         image:
- *           type: string
- *           nullable: true
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -32,7 +29,7 @@
  *             email:
  *               type: string
  *               format: email
- *             image:
+ *             profileImage:
  *               type: string
  *               nullable: true
  *         comments:
