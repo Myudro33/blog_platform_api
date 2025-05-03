@@ -53,7 +53,13 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateComment'
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: This is a comment.
+ *             required:
+ *               - content
  *     responses:
  *       201:
  *         description: Comment created successfully.
@@ -107,7 +113,13 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdateComment'
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: This is a comment.
+ *             required:
+ *               - content
  *     responses:
  *       200:
  *         description: Comment updated successfully.
