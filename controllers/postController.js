@@ -13,7 +13,7 @@ export const getPosts = async (req, res) => {
         images: { select: { id: true, url: true } },
       },
     });
-    res.json({ message: "success", data: posts });
+    res.json({ message: "Posts fetched successfully", data: posts });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -29,7 +29,7 @@ export const createPost = async (req, res) => {
     });
     if (files && files.length > 0) {
       const images = files.map((file) => ({
-        createdAt: new Date(),
+        created_at: new Date(),
         postId: newPost.id,
         url: file.path,
       }));
@@ -37,7 +37,7 @@ export const createPost = async (req, res) => {
         data: images,
       });
     }
-    res.json({ message: "success", data: newPost });
+    res.json({ message: "Post created successfully", data: newPost });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -61,7 +61,7 @@ export const updatePost = async (req, res) => {
       data: { title, content, updatedAt: new Date() },
     });
     if (files && files.length > 0) {
-      files.array.forEach((file) => {
+      files.forEach((file) => {
         if (fs.existsSync(`./${file.path}`)) {
           fs.unlinkSync(`./${file.path}`);
         }
@@ -71,14 +71,14 @@ export const updatePost = async (req, res) => {
       res.status(400).json({ message: "no files uploaded" });
     }
     const images = files.map((file) => ({
-      createdAt: new Date(),
-      postId: newPost.id,
+      created_at: new Date(),
+      postId: updatedPost.id,
       url: file.path,
     }));
     await prisma.postImages.createMany({
       data: images,
     });
-    res.json({ message: "success", data: updatedPost });
+    res.json({ message: "Posts updated successfully", data: updatedPost });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -98,7 +98,7 @@ export const deletePost = async (req, res) => {
     await prisma.posts.delete({
       where: { id: parseInt(id) },
     });
-    res.json({ message: "success" });
+    res.json({ message: "Post deleted successfully" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -110,7 +110,9 @@ export const getPostById = async (req, res) => {
     const post = await prisma.posts.findUnique({
       where: { id: parseInt(id) },
       include: {
-        author: { select: { id: true, name: true, email: true, image: true } },
+        author: {
+          select: { id: true, name: true, email: true, profileImage: true },
+        },
         images: { select: { id: true, url: true } },
         comments: true,
       },
@@ -118,7 +120,7 @@ export const getPostById = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    res.json({ message: "success", data: post });
+    res.json({ message: "Post fetched succesfully", data: post });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
