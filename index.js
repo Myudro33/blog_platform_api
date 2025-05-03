@@ -7,9 +7,7 @@ import cors from "cors";
 dotenv.config();
 app.use("/uploads", express.static("./uploads"));
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
-app.use(
-  cors({ origin: "https://blog-platform-api-97bab037251a.herokuapp.com/" })
-);
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
