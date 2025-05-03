@@ -10,9 +10,7 @@ export const getPosts = async (req, res) => {
         author: {
           select: { id: true, name: true, email: true, profileImage: true },
         },
-        postImages: {
-          select: { id: true, url: true },
-        },
+        images: { select: { id: true, url: true } },
       },
     });
     res.json({ message: "success", data: posts });
@@ -113,7 +111,7 @@ export const getPostById = async (req, res) => {
       where: { id: parseInt(id) },
       include: {
         author: { select: { id: true, name: true, email: true, image: true } },
-        postImages: { select: { id: true, url: true } },
+        images: { select: { id: true, url: true } },
         comments: true,
       },
     });
