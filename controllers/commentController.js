@@ -37,7 +37,7 @@ export const getPostComments = async (req, res) => {
             id: true,
             name: true,
             email: true,
-            image: true,
+            profileImage: true,
           },
         },
       },
