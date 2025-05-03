@@ -39,19 +39,16 @@ async function main() {
       {
         title: "First Post",
         content: "This is the content of the first post.",
-        image: "https://via.placeholder.com/150",
         authorId: 1,
       },
       {
         title: "Second Post",
         content: "This is the content of the second post.",
-        image: "https://via.placeholder.com/150",
         authorId: 2,
       },
       {
         title: "Third Post",
         content: "This is the content of the third post.",
-        image: "https://via.placeholder.com/150",
         authorId: 1,
       },
     ],
