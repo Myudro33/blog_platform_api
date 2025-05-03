@@ -69,7 +69,20 @@
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CreatePost'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "My First Post"
+ *               content:
+ *                 type: string
+ *                 example: "This is the content of my first post."
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *             required:
+ *               - title
+ *               - content
  *     responses:
  *       201:
  *         description: Post created successfully.
@@ -126,7 +139,17 @@
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UpdatePost'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "My First Post"
+ *               content:
+ *                 type: string
+ *                 example: "This is the content of my first post."
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Post updated successfully.
