@@ -44,18 +44,9 @@ export const createPost = async (req, res) => {
 };
 export const updatePost = async (req, res) => {
   const { id } = req.params;
-  const user = req.user;
   const { title, content } = req.body;
   const files = req.files;
   try {
-    const post = await prisma.posts.findUnique({
-      where: { id: parseInt(id) },
-    });
-    if (!(req.user.role == "admin" || user.id == post.authorId)) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this post" });
-    }
     let updatedPost = await prisma.posts.update({
       where: { id: parseInt(id) },
       data: { title, content, updatedAt: new Date() },
@@ -85,15 +76,12 @@ export const updatePost = async (req, res) => {
 };
 export const deletePost = async (req, res) => {
   const { id } = req.params;
-  const user = req.user;
   try {
     const post = await prisma.posts.findUnique({
       where: { id: parseInt(id) },
     });
-    if (!(user.role == "admin") && user.id != post.authorId) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to delete this post" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
     await prisma.posts.delete({
       where: { id: parseInt(id) },

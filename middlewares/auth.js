@@ -1,4 +1,7 @@
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const auth = (req, res, next) => {
   if (!req.headers.authorization) {
@@ -32,4 +35,22 @@ export const isUser = (req, res, next) => {
     return res.status(403).json({ message: "only user can access this route" });
   }
   next();
+};
+export const isAuthor = async (req, res, next) => {
+  const { baseUrl } = req;
+  const { id } = req.params;
+  const slicedUrl = baseUrl.slice(5);
+  const record = await prisma[slicedUrl].findUnique({
+    where: { id: parseInt(id) },
+  });
+  if (!record) {
+    return res.status(404).json({ message: `${slicedUrl} not found` });
+  }
+  const authorId = slicedUrl == "comments" ? record.userId : record.authorId;
+  if (req.user.role === "admin" || req.user.id == authorId) {
+    return next();
+  }
+  return res.status(403).json({
+    message: `only the author of the ${slicedUrl} can access this route`,
+  });
 };

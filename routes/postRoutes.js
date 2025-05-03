@@ -13,7 +13,7 @@ import {
   deletePost,
   getPostById,
 } from "../controllers/postController.js";
-import { auth } from "../middlewares/auth.js";
+import { auth, isAuthor } from "../middlewares/auth.js";
 
 router
   .route("/")
@@ -22,7 +22,7 @@ router
 router
   .route("/:id")
   .get(auth, getPostById)
-  .put(auth, uploadProductImages.array("image", 5), updatePost)
+  .put(auth, isAuthor, uploadProductImages.array("image", 5), updatePost)
   .delete(auth, deletePost);
 
 export default router;

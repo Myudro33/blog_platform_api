@@ -53,18 +53,12 @@ export const getPostComments = async (req, res) => {
 export const updateComment = async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;
-  const user = req.user;
   try {
     const comment = await prisma.comments.findUnique({
       where: { id: parseInt(id) },
     });
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
-    }
-    if (!(user.role == "admin" || user.id == comment.userId)) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this comment" });
     }
     const updatedComment = await prisma.comments.update({
       where: {
@@ -92,11 +86,6 @@ export const deleteComment = async (req, res) => {
     });
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
-    }
-    if (!(user.role == "admin" || user.id == comment.userId)) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to delete this comment" });
     }
     await prisma.comments.delete({
       where: {
