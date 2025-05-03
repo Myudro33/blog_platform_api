@@ -13,12 +13,12 @@ export const getAllUsers = async (req, res) => {
     });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
+    res.status(500).json({ message: error.message });
   }
 };
 
 export const createUser = async (req, res) => {
-  const { name, email, password, role_Id } = req.body;
+  const { name, email, password, role_Id = 2 } = req.body;
   try {
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = await prisma.users.create({
@@ -34,7 +34,7 @@ export const createUser = async (req, res) => {
       .status(201)
       .json({ message: "User created successfully", data: newUser });
   } catch (error) {
-    res.status(500).json({ message: "Error creating user" });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -47,7 +47,6 @@ export const updateUser = async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         name,
-        updatedAt: new Date(),
       },
     });
     if (file) {
@@ -58,11 +57,12 @@ export const updateUser = async (req, res) => {
         },
       });
     }
+    delete updatedUser.password;
     res
       .status(200)
       .json({ message: "User updated successfully", data: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: "Error updating user" });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -76,22 +76,21 @@ export const deleteUser = async (req, res) => {
     });
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error deleting user" });
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const signUp = async (req, res) => {
-  const { firstName, lastName, email, password, role_Id = 2 } = req.body;
+  const { name, email, password, role_Id = 2 } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.users.create({
-      data: { firstName, lastName, email, password: hashedPassword, role_Id },
+      data: { name, email, password: hashedPassword, role_Id },
     });
+    delete user.password;
     res.json({ message: "user created", data: user });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "server error", error: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 export const signIn = async (req, res) => {
@@ -135,7 +134,7 @@ export const profile = async (req, res) => {
     delete user.password;
     res.json({ data: user });
   } catch (error) {
-    res.status(500).json({ message: "server error", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -175,10 +174,10 @@ export const forgotPassword = async (req, res) => {
       });
       res.json({ message: "OTP sent to email" });
     } else {
-      res.status(500).json({ message: "server error", error: error.message });
+      res.status(500).json({ message: error.message });
     }
   } catch (error) {
-    return res.status(500).json({ message: "server error" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -221,8 +220,9 @@ export const resetPassword = async (req, res) => {
     await prisma.otpCodes.deleteMany({
       where: { userId: user.id },
     });
-    res.json({ message: "password updated successfully" });
+    delete updatedUser.password;
+    res.json({ message: "password updated successfully", data: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: "server error", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
