@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
+import { AppError } from "../utils/errorHandler";
 
 const prisma = new PrismaClient();
 
-export const getPosts = async (req, res) => {
+export const getPosts = async (req, res, next) => {
   try {
     const posts = await prisma.posts.findMany({
       include: {
@@ -15,11 +16,11 @@ export const getPosts = async (req, res) => {
     });
     res.json({ message: "Posts fetched successfully", data: posts });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return next(new AppError(error.message, 500));
   }
 };
 
-export const createPost = async (req, res) => {
+export const createPost = async (req, res, next) => {
   const { title, content } = req.body;
   const files = req.files;
   const user = req.user;
@@ -39,10 +40,10 @@ export const createPost = async (req, res) => {
     }
     res.json({ message: "Post created successfully", data: newPost });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return next(new AppError(error.message, 500));
   }
 };
-export const updatePost = async (req, res) => {
+export const updatePost = async (req, res, next) => {
   const { id } = req.params;
   const { title, content } = req.body;
   const files = req.files;
@@ -59,7 +60,7 @@ export const updatePost = async (req, res) => {
       });
     }
     if (!files && !files.length > 0) {
-      res.status(400).json({ message: "no files uploaded" });
+      return next(new AppError("No files uploaded", 400));
     }
     const images = files.map((file) => ({
       created_at: new Date(),
@@ -71,28 +72,28 @@ export const updatePost = async (req, res) => {
     });
     res.json({ message: "Posts updated successfully", data: updatedPost });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return next(new AppError(error.message, 500));
   }
 };
-export const deletePost = async (req, res) => {
+export const deletePost = async (req, res, next) => {
   const { id } = req.params;
   try {
     const post = await prisma.posts.findUnique({
       where: { id: parseInt(id) },
     });
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return next(new AppError("Post not found", 404));
     }
     await prisma.posts.delete({
       where: { id: parseInt(id) },
     });
     res.json({ message: "Post deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return next(new AppError(error.message, 500));
   }
 };
 
-export const getPostById = async (req, res) => {
+export const getPostById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const post = await prisma.posts.findUnique({
@@ -106,10 +107,10 @@ export const getPostById = async (req, res) => {
       },
     });
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return next(new AppError("Post not found", 404));
     }
     res.json({ message: "Post fetched succesfully", data: post });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return next(new AppError(error.message, 500));
   }
 };

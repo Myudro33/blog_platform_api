@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import { AppError } from "../utils/errorHandler";
 
 const prisma = new PrismaClient();
 
-export const createComment = async (req, res) => {
+export const createComment = async (req, res, next) => {
   const { id } = req.params;
   const { content } = req.body;
   const user = req.user;
@@ -19,11 +20,11 @@ export const createComment = async (req, res) => {
       .status(201)
       .json({ message: "Comment created successfully", data: comment });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(new AppError(error.message, 500));
   }
 };
 
-export const getPostComments = async (req, res) => {
+export const getPostComments = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -46,11 +47,11 @@ export const getPostComments = async (req, res) => {
       .status(200)
       .json({ message: "Comments fetched successfully", data: comments });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(new AppError(error.message, 500));
   }
 };
 
-export const updateComment = async (req, res) => {
+export const updateComment = async (req, res, next) => {
   const { id } = req.params;
   const { content } = req.body;
   try {
@@ -58,7 +59,7 @@ export const updateComment = async (req, res) => {
       where: { id: parseInt(id) },
     });
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return next(new AppError("Comment not found", 404));
     }
     const updatedComment = await prisma.comments.update({
       where: {
@@ -72,11 +73,11 @@ export const updateComment = async (req, res) => {
       .status(200)
       .json({ message: "Comment updated successfully", data: updatedComment });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(new AppError(error.message, 500));
   }
 };
 
-export const deleteComment = async (req, res) => {
+export const deleteComment = async (req, res, next) => {
   const { id } = req.params;
   const user = req.user;
 
@@ -85,7 +86,7 @@ export const deleteComment = async (req, res) => {
       where: { id: parseInt(id) },
     });
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return next(new AppError("Comment not found", 404));
     }
     await prisma.comments.delete({
       where: {
@@ -94,6 +95,6 @@ export const deleteComment = async (req, res) => {
     });
     res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(new AppError(error.message, 500));
   }
 };
