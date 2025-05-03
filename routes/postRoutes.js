@@ -22,7 +22,7 @@ router
 router
   .route("/:id")
   .get(auth, getPostById)
-  .put(auth, uploadProfile.single("image"), updatePost)
+  .put(auth, uploadProductImages.array("image", 5), updatePost)
   .delete(auth, deletePost);
 
 export default router;
