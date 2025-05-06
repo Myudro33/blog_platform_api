@@ -9,16 +9,12 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/api",
-        description: "Development server",
-      },
-      {
         url: "https://blog-platform-api-97bab037251a.herokuapp.com/api",
         description: "Production server",
       },
       {
-        url: "https://blog-platform-api-gal8.onrender.com/api",
-        description: "Production server Render",
+        url: "http://localhost:3000/api",
+        description: "Development server",
       },
     ],
   },
